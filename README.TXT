@@ -1,26 +1,62 @@
-Project: zuul-better
-Authors: Michael Kolling and David J. Barnes
+Project: The Last Lantern (World of Zuul coursework)
 
-This project is part of the material for the book
+The Last Lantern is a complete text-adventure extension of the supplied
+zuul-better BlueJ project. The player explores Lantern Keep, manages a
+weight-limited inventory, feeds a dwarf with a three-word command, receives a
+star wand, and relights the moon beacon to win.
 
-   Objects First with Java - A Practical Introduction using BlueJ
-   David J. Barnes and Michael Kolling
-   Pearson Education, 2002
-   
-This project is a simple framework for an adventure game. In this version,
-it has a few rooms and the ability for a player to walk between these rooms.
-That's all.
+RUN
+---
+BlueJ: open this folder, create a Game object, and call play().
+JAR:   java -jar The-Last-Lantern.jar
 
-To start this application, create an instance of class "Game" and call its
-"play" method.
+The executable JAR is built with Game as its Main-Class. The source remains in
+the default package so it opens naturally as a BlueJ teaching project.
 
-This project was written as the starting point of a small Java project.
+COMMANDS
+--------
+go, back, look, take, drop, inventory, examine, talk, give, use, hint, wait,
+help, quit
 
-The goal is to extend the game:
+Examples:
+  go north
+  take bread
+  give bread dwarf
+  use wand beacon
 
-  - add items to rooms (items may have weight)
-  - add multiple players
-  - add commands (pick, drop, examine, read, ...)
-  - (anything you can think of, really...)
+WINNING WALKTHROUGH
+-------------------
+  go north
+  go east
+  take bread
+  go west
+  go north
+  go east
+  give bread dwarf
+  go west
+  go north
+  use wand beacon
 
-Read chapter 7 of the book to get a detailed description of the project.
+AUTOMATED TESTS
+---------------
+Compile all Java files, then run:
+  java -ea GameTests
+
+The dependency-free regression suite checks three-word parsing, multiple room
+items, fixed items, exact/overweight carrying, multi-step backtracking, moving
+characters, random transport, item rules, and the complete winning path.
+
+FEATURE SUMMARY
+---------------
+- Nine rooms with stable, bidirectional ordinary exits.
+- Any number of items per room; portable and fixed scenery items.
+- Item weights and a 6 kg player carry limit.
+- Full travel history for repeated back commands.
+- Eleven new commands beyond go/help/quit.
+- A recognised, clearly announced winning condition.
+- A clockwork raven that moves independently.
+- Three-word commands including give bread dwarf and use wand beacon.
+- A shimmer chamber that transports the player to a random ordinary room.
+- Injectable input/output/randomness and a no-library regression test suite.
+
+Known bugs: none found in the supplied automated and scripted tests.

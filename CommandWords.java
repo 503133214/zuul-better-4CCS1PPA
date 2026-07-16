@@ -1,51 +1,50 @@
-/*
- * This class is the main class of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.
- * 
- * This class holds an enumeration of all command words known to the game.
- * It is used to recognise commands as they are typed in.
- *
- * @author  Michael Kolling and David J. Barnes
- * @version 1.0 (February 2002)
+import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+/**
+ * Stores the command vocabulary understood by the game.
  */
-
-class CommandWords
+public class CommandWords
 {
-    // a constant array that holds all valid command words
-    private static final String validCommands[] = {
-        "go", "quit", "help"
-    };
+    private static final Set<String> VALID_COMMANDS =
+        Collections.unmodifiableSet(new LinkedHashSet<String>(Arrays.asList(
+            "go", "back", "look", "take", "drop", "inventory",
+            "examine", "talk", "give", "use", "hint", "wait",
+            "help", "quit"
+        )));
 
     /**
-     * Constructor - initialise the command words.
+     * Returns true when the supplied word is a recognised command.
      */
-    public CommandWords()
+    public boolean isCommand(String word)
     {
-        // nothing to do at the moment...
+        return word != null && VALID_COMMANDS.contains(word);
     }
 
     /**
-     * Check whether a given String is a valid command word. 
-     * Return true if it is, false if it isn't.
+     * Prints all commands to the supplied output stream.
      */
-    public boolean isCommand(String aString)
+    public void showAll(PrintStream output)
     {
-        for(int i = 0; i < validCommands.length; i++) {
-            if(validCommands[i].equals(aString))
-                return true;
+        boolean first = true;
+        for (String command : VALID_COMMANDS) {
+            if (!first) {
+                output.print("  ");
+            }
+            output.print(command);
+            first = false;
         }
-        // if we get here, the string was not found in the commands
-        return false;
+        output.println();
     }
 
-    /*
-     * Print all valid commands to System.out.
+    /**
+     * Retained for compatibility with the original BlueJ project.
      */
-    public void showAll() 
+    public void showAll()
     {
-        for(int i = 0; i < validCommands.length; i++) {
-            System.out.print(validCommands[i] + "  ");
-        }
-        System.out.println();
+        showAll(System.out);
     }
 }

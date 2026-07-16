@@ -1,70 +1,70 @@
 /**
- * This class is the main class of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
+ * Represents one command entered by the player.
  *
- * This class holds information about a command that was issued by the user.
- * A command currently consists of two strings: a command word and a second
- * word (for example, if the command was "take map", then the two strings
- * obviously are "take" and "map").
- * 
- * The way this is used is: Commands are already checked for being valid
- * command words. If the user entered an invalid command (a word that is not
- * known) then the command word is <null>.
- *
- * If the command had only one word, then the second word is <null>.
- * 
- * @author  Michael Kolling and David J. Barnes
- * @version 1.0 (February 2002)
+ * A command can contain up to three words.  The third word supports commands
+ * such as "give bread dwarf".  The parser also records whether extra words
+ * were supplied so that the game can report the error instead of silently
+ * ignoring input.
  */
-
-class Command
+public class Command
 {
-    private String commandWord;
-    private String secondWord;
+    private final String commandWord;
+    private final String secondWord;
+    private final String thirdWord;
+    private final boolean extraWords;
 
     /**
-     * Create a command object. First and second word must be supplied, but
-     * either one (or both) can be null. The command word should be null to
-     * indicate that this was a command that is not recognised by this game.
+     * Backwards-compatible constructor for one- and two-word commands.
      */
     public Command(String firstWord, String secondWord)
     {
-        commandWord = firstWord;
-        this.secondWord = secondWord;
+        this(firstWord, secondWord, null, false);
     }
 
     /**
-     * Return the command word (the first word) of this command. If the
-     * command was not understood, the result is null.
+     * Creates a parsed command.
      */
+    public Command(String firstWord, String secondWord, String thirdWord,
+                   boolean extraWords)
+    {
+        this.commandWord = firstWord;
+        this.secondWord = secondWord;
+        this.thirdWord = thirdWord;
+        this.extraWords = extraWords;
+    }
+
     public String getCommandWord()
     {
         return commandWord;
     }
 
-    /**
-     * Return the second word of this command. Returns null if there was no
-     * second word.
-     */
     public String getSecondWord()
     {
         return secondWord;
     }
 
-    /**
-     * Return true if this command was not understood.
-     */
+    public String getThirdWord()
+    {
+        return thirdWord;
+    }
+
     public boolean isUnknown()
     {
-        return (commandWord == null);
+        return commandWord == null;
     }
 
-    /**
-     * Return true if the command has a second word.
-     */
     public boolean hasSecondWord()
     {
-        return (secondWord != null);
+        return secondWord != null;
+    }
+
+    public boolean hasThirdWord()
+    {
+        return thirdWord != null;
+    }
+
+    public boolean hasExtraWords()
+    {
+        return extraWords;
     }
 }
-

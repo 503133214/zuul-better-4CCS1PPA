@@ -1,79 +1,82 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.util.Locale;
 
-/*
- * This class is the main class of the "World of Zuul" application. 
- * "World of Zuul" is a very simple, text based adventure game.  
- *
- * This parser reads user input and tries to interpret it as an "Adventure"
- * command. Every time it is called it reads a line from the terminal and
- * tries to interpret the line as a two word command. It returns the command
- * as an object of class Command.
- *
- * The parser has a set of known command words. It checks user input against
- * the known commands, and if the input is not one of the known commands, it
- * returns a command object that is marked as an unknown command.
- * 
- * @author  Michael Kolling and David J. Barnes
- * @version 1.0 (February 2002)
+/**
+ * Reads and validates console commands for the adventure game.
  */
-
-class Parser 
+public class Parser
 {
+    private final CommandWords commands;
+    private final BufferedReader reader;
+    private final PrintStream output;
 
-    private CommandWords commands;  // holds all valid command words
-
-    public Parser() 
+    /**
+     * Creates a parser connected to the console.
+     */
+    public Parser()
     {
-        commands = new CommandWords();
-    }
-
-    public Command getCommand() 
-    {
-        String inputLine = "";   // will hold the full input line
-        String word1;
-        String word2;
-
-        System.out.print("> ");     // print prompt
-
-        BufferedReader reader = 
-            new BufferedReader(new InputStreamReader(System.in));
-        try {
-            inputLine = reader.readLine();
-        }
-        catch(java.io.IOException exc) {
-            System.out.println ("There was an error during reading: "
-                                + exc.getMessage());
-        }
-
-        StringTokenizer tokenizer = new StringTokenizer(inputLine);
-
-        if(tokenizer.hasMoreTokens())
-            word1 = tokenizer.nextToken();      // get first word
-        else
-            word1 = null;
-        if(tokenizer.hasMoreTokens())
-            word2 = tokenizer.nextToken();      // get second word
-        else
-            word2 = null;
-
-        // note: we just ignore the rest of the input line.
-
-        // Now check whether this word is known. If so, create a command
-        // with it. If not, create a "null" command (for unknown command).
-
-        if(commands.isCommand(word1))
-            return new Command(word1, word2);
-        else
-            return new Command(null, word2);
+        this(new InputStreamReader(System.in), System.out);
     }
 
     /**
-     * Print out a list of valid command words.
+     * Creates a parser using injectable input and output.  This constructor
+     * keeps the parser testable without changing normal console behaviour.
      */
+    public Parser(Reader input, PrintStream output)
+    {
+        if (input == null || output == null) {
+            throw new IllegalArgumentException("Input and output are required.");
+        }
+        this.commands = new CommandWords();
+        this.reader = new BufferedReader(input);
+        this.output = output;
+    }
+
+    /**
+     * Reads one line and returns a command containing at most three words.
+     * End-of-file is treated as a clean quit so scripted runs cannot crash.
+     */
+    public Command getCommand()
+    {
+        output.print("> ");
+
+        final String inputLine;
+        try {
+            inputLine = reader.readLine();
+        }
+        catch (IOException exception) {
+            output.println("There was an error while reading: "
+                           + exception.getMessage());
+            return new Command(null, null, null, false);
+        }
+
+        if (inputLine == null) {
+            return new Command("quit", null, null, false);
+        }
+
+        String trimmed = inputLine.trim().toLowerCase(Locale.ENGLISH);
+        if (trimmed.length() == 0) {
+            return new Command(null, null, null, false);
+        }
+
+        String[] words = trimmed.split("\\s+");
+        String firstWord = words[0];
+        String secondWord = words.length > 1 ? words[1] : null;
+        String thirdWord = words.length > 2 ? words[2] : null;
+        boolean extraWords = words.length > 3;
+
+        if (!commands.isCommand(firstWord)) {
+            firstWord = null;
+        }
+        return new Command(firstWord, secondWord, thirdWord, extraWords);
+    }
+
     public void showCommands()
     {
-        commands.showAll();
+        commands.showAll(output);
     }
 }
